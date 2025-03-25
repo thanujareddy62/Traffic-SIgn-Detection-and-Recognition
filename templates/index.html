@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traffic Sign Detection</title>
+</head>
+<body>
+    <h1>Traffic Sign Detection</h1>
+    <form action="/predict" method="POST" enctype="multipart/form-data">
+        <label for="fileInput">Upload an image of a traffic sign:</label>
+        <input type="file" id="fileInput" name="file" accept="image/*" required>
+        <button type="submit">Predict</button>
+    </form>
+    <p id="result"></p>
+    <!-- Display error message if any -->
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
+    <!-- Display the uploaded image and the prediction result if available -->
+    {% if prediction and image_url %}
+        <h2>Prediction: {{ prediction }}</h2>
+        <img src="{{ image_url }}" alt="Uploaded Image" style="max-width: 300px; max-height: 300px;">
+    {% endif %}
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData();
+            const fileInput = document.getElementById('fileInput');
+            formData.append('file', fileInput.files[0]);
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+                document.getElementById('result').innerText = Predicted traffic sign: ${result.prediction};
+            } catch (error) {
+                document.getElementById('result').innerText = 'Error: Unable to predict!';
+            }
+        });
+    </script>
+</body>
+</html>

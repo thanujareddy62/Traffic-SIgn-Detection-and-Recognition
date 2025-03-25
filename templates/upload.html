@@ -1,0 +1,126 @@
+<!-- {% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Traffic Sign Detection 🚦</h2>
+    <form action="/upload" method="POST" enctype="multipart/form-data">
+        <label for="fileUpload">Upload an Image:</label>
+        <input type="file" name="file" id="fileUpload" accept="image/*">
+        <button type="submit">Predict</button>
+    </form>
+
+    {% if prediction %}
+    <div class="result">
+        <h3>Prediction Result:</h3>
+        <p><strong>{{ prediction }}</strong></p>
+        <img src="{{ filepath }}" alt="Uploaded Image">
+    </div>
+    {% endif %}
+</div>
+{% endblock %} -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traffic Sign Detection 🚦</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            margin-top: 20px;
+        }
+        label {
+            font-size: 16px;
+            color: #555;
+        }
+        input[type="file"] {
+            display: block;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .result img {
+            max-width: 100%;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Traffic Sign Detection 🚦</h2>
+        <form id="uploadForm">
+            <label for="fileUpload">Upload an Image:</label>
+            <input type="file" id="fileUpload" name="file" accept="image/*" required>
+            <button type="submit">Predict</button>
+        </form>
+        <div class="result" id="result">
+            <h3>Prediction Result:</h3>
+            <p><strong id="predictionText"></strong></p>
+            <img id="uploadedImage" alt="Traffic Sign Image">
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById("uploadForm");
+        const resultDiv = document.getElementById("result");
+        const predictionText = document.getElementById("predictionText");
+        const uploadedImage = document.getElementById("uploadedImage");
+
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const formData = new FormData(form);
+            try {
+                const response = await fetch("/upload", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    predictionText.textContent = `Prediction: ${data.prediction}`;
+                    uploadedImage.src = data.filepath;
+                    resultDiv.style.display = "block";
+                } else {
+                    alert(data.error || "Prediction failed");
+                }
+            } catch (error) {
+                alert("An error occurred: " + error.message);
+            }
+        });
+    </script>
+</body>
+</html>
+
